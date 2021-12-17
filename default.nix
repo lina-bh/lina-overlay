@@ -7,14 +7,18 @@
 #     nix-build -A mypackage
 
 { pkgs ? import <nixpkgs> { } }:
-
+let
+  lib = import ./lib.nix { inherit pkgs; };
+in
 {
   # The `lib`, `modules`, and `overlay` names are special
-  lib = import ./lib { inherit pkgs; }; # functions
+  inherit lib;
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  example-package = pkgs.callPackage ./pkgs/example-package { };
-  # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
-  # ...
+  mpv-git = import ./pkgs/mpv-git/default.nix {
+    inherit pkgs;
+  };
+
+  wrapGL = lib.wrapGL;
 }
